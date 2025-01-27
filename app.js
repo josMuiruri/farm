@@ -45,7 +45,14 @@ app.post('api/v1/products', (req, res) => {
         data: {
             product: newProduct
         }
-    })
+    });
+});
+
+app.patch('api/v1/products/:id', (req, res) => {
+    res.status(200).json({
+        status: 'fail',
+        message: 'Invalid ID'
+    });
 })
 
 const port = 3000;
