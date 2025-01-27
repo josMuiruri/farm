@@ -4,17 +4,17 @@ const app = express();
 
 app.use(express.json());
 
-app.get('/api/v1/products', (req, res) => {
+const getAllProducts = (req, res) => {
     res.status(200).json({
         status: 'success',
         results: products.length,
         data: {
             products
         }
-    })
-})
+    });
+};
 
-app.get('/api/v1/products/:id', (req, res) => {
+const getProduct = (req, res) => {
     const id = req.params.id * 1;
     const product = products.find(el => el.id === id);
 
@@ -32,9 +32,9 @@ app.get('/api/v1/products/:id', (req, res) => {
             product
         }
     })
-})
+};
 
-app.post('api/v1/products', (req, res) => {
+const createProduct = (req, res) => {
 
     const newId = products[products.length - 1].id + 1;
     const newProduct = Object.assign({ id: newId}, req.body);
@@ -46,9 +46,9 @@ app.post('api/v1/products', (req, res) => {
             product: newProduct
         }
     });
-});
+};
 
-app.patch('api/v1/products/:id', (req, res) => {
+const updateProduct =  (req, res) => {
     if (req.params.id * 1 > products.length) {
         return res.status(404).json({
             status: 'fail',
@@ -61,9 +61,9 @@ app.patch('api/v1/products/:id', (req, res) => {
             product: 'updated product'
         }
     });
-})
+};
 
-app.delete('api/v1/products/:id', (req, res) => {
+const deleteProduct =  (req, res) => {
     if (req.params.id * 1 > products.length) {
         return res.status(404).json({
             status: 'fail',
@@ -74,7 +74,11 @@ app.delete('api/v1/products/:id', (req, res) => {
         status: 'success',
         data: null
     });
-});
+};
+
+app.route('/api/v1/products').get(getAllProducts).post(createProduct);
+
+app.route('/api/v1/products/:id').get(getProduct).patch(updateProduct).delete(deleteProduct)
 
 const port = 3000;
 app.listen(port, () => {
