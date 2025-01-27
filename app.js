@@ -49,11 +49,20 @@ app.post('api/v1/products', (req, res) => {
 });
 
 app.patch('api/v1/products/:id', (req, res) => {
+    if (req.params.id * 1 > products.length) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Invalid ID'
+        });
+    }
     res.status(200).json({
-        status: 'fail',
-        message: 'Invalid ID'
+        status: 'success',
+        data: {
+            product: 'updated product'
+        }
     });
 })
+
 
 const port = 3000;
 app.listen(port, () => {
