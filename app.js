@@ -1,8 +1,12 @@
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
+// middlewares
+app.use(morgan('dev'))
 app.use(express.json());
+
 
 const getAllProducts = (req, res) => {
     res.status(200).json({
@@ -76,12 +80,25 @@ const deleteProduct =  (req, res) => {
     });
 };
 
-app.route('/api/v1/products').get(getAllProducts).post(createProduct);
+// Routes
 
-app.route('/api/v1/products/:id').get(getProduct).patch(updateProduct).delete(deleteProduct)
+
+const productRouter = express.Router();
+const userRouter = express.Router();
+
+productRouter.route('/').get(getAllProducts).post(createProduct);
+
+productRouter.route('/:id').get(getProduct).patch(updateProduct).delete(deleteProduct);
+
+userRouter.route('/').get(getAllUsers).post(createUser);
+
+userRouter.route('/:id').get(getUsers).patch(updateUser).delete(deleteUser);
+
+app.use('/api/v1/products', productRouter);
+app.use('/api/v1/users', userRouter);
 
 const port = 3000;
 app.listen(port, () => {
-    console.log('App running on port ${port}...');
+    console.log(`App running on port ${port}...`);
 })
 
