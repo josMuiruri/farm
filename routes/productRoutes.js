@@ -3,6 +3,8 @@ const productController = require('./../controllers/productController');
 
 const router = express.Router();
 
+router.param('id', productController.checkID);
+
 router
     .route('/')
     .get(productController.getAllProducts)
