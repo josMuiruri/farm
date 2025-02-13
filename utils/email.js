@@ -32,37 +32,4 @@ module.exports = class Email {
       },
     });
   }
-
-  // Send the actual email
-  async send(template, subject) {
-    // render html for email based on a pug template
-    const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
-      firstName: this.firstName,
-      url: this.url,
-      subject,
-    });
-
-    // define email options
-    const mailOptions = {
-      from: this.from,
-      to: this.to,
-      subject,
-      html,
-      text: htmlToText.convert(html),
-    };
-
-    // Create a transport and Send email
-
-    await this.newTransport().sendMail(mailOptions);
-  }
-
-  async sendWelcome() {
-    await this.send('welcome', 'welcome to FARM');
-  }
-  async sendPasswordReset() {
-    await this.send(
-      'passwordReset',
-      'Your password reset token (valid for only 5 minutes)',
-    );
-  }
 };
