@@ -1,3 +1,6 @@
+const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
+
 exports.getMe = (req, res, next) => {
   req.params.id = req.user.id;
   next();
