@@ -54,5 +54,31 @@ const productSchema = new mongoose.Schema({
   },
 });
 
+// indexing
+productSchema.index({ price: 1, ratingsAverage: -1 });
+productSchema.index({ slug: 1 });
+
+// virtual populate
+productSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'product',
+  localField: '_id',
+});
+
+// Doc middleware
+productSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// Query middleware
+productSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'cashiers',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
+
 const Product = mongoose.model('Product', productSchema);
 module.exports = Product;
