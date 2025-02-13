@@ -36,7 +36,7 @@ exports.getAllProducts = async (req, res) => {
 
     query = query.skip(skip).limit(limit);
 
-    if (req.query.page) { 
+    if (req.query.page) {
       const numProducts = await Product.countDocuments();
       if (skip >= numProducts) throw new Error('This page does not exist');
     }
@@ -131,3 +131,32 @@ exports.deleteProduct = async (req, res) => {
     });
   }
 };
+
+exports.getProductStats = catchAsync(async (req, res, next) => {
+  const stats = await Product.aggregate([
+    {
+      $match: { ratingsAverage: { $gte: 3.1 } },
+    },
+    {
+      $group: {
+        _id: { $toUpper: '$brand' },
+        numProducts: { $sum: 1 },
+        numRatings: { $sum: '$ratingsQuantity' },
+        avgRating: { $avg: '$ratingsAverage' },
+        avgPrice: { $avg: '$price' },
+        minPrice: { $min: '$price' },
+        maxPrice: { $max: '$price' },
+      },
+    },
+    {
+      $sort: { avgPrice: 1 },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      stats,
+    },
+  });
+});
