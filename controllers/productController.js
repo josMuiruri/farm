@@ -160,3 +160,42 @@ exports.getProductStats = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
+  // converting a string to a no.
+  const year = req.params.year * 1;
+
+  const plan = await Product.aggregate([
+    { $unwind: '$productTimeSold' },
+    {
+      $match: {
+        productTimeSold: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`),
+        },
+      },
+    },
+    {
+      $group: {
+        _id: { $month: '$productTimeSold' },
+        numProductStats: { $sum: 1 },
+        products: { $push: '$name' },
+      },
+    },
+    {
+      // months to be displayed
+      $addFields: { month: '$_id' },
+    },
+    {
+      // desc order
+      $sort: { numProductStats: -1 },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      plan,
+    },
+  });
+});
